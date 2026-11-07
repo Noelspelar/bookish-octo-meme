@@ -2,14 +2,14 @@ name: ShardPickaxe
 version: 1.0.0
 main: dev.shardpickaxe.ShardPickaxePlugin
 api-version: '1.21'
-description: Shard Pickaxe with a chance to summon a protective lava minion.
+description: Lava Pickaxe with a chance to summon a protective lava minion.
 commands:
   shardpickaxe:
-    description: Give the Shard Pickaxe or reload the config.
+    description: Give the Lava Pickaxe or reload the config.
     usage: /shardpickaxe <give [player] | reload>
     aliases: [shardpick]
   lavapickaxe:
-    description: Get the Shard Pickaxe (creative or admin).
+    description: Get the Lava Pickaxe (creative or admin).
     usage: /lavapickaxe
     aliases: [shardgive]
   home:

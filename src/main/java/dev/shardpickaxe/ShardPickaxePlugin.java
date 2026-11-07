@@ -49,7 +49,7 @@ public class ShardPickaxePlugin extends org.bukkit.plugin.java.JavaPlugin implem
      * IMPORTANT: this text + colour must match the entry in the resource pack's
      * assets/minecraft/items/netherite_pickaxe.json (it uses the same small-caps / Cyrillic letters).
      */
-    public static final String ITEM_NAME = "ѕʜᴀʀᴅ ᴘɪᴄᴋᴀхᴇ";
+    public static final String ITEM_NAME = "Lava Pickaxe";
     public static final TextColor ITEM_COLOR = TextColor.color(0xFF5A00);
 
     private Eco eco;
@@ -137,7 +137,7 @@ public class ShardPickaxePlugin extends org.bukkit.plugin.java.JavaPlugin implem
                 }
                 lp.getInventory().addItem(createPickaxe()).values()
                         .forEach(left -> lp.getWorld().dropItemNaturally(lp.getLocation(), left));
-                lp.sendMessage(Component.text("Here is your Shard Pickaxe.", NamedTextColor.GREEN));
+                lp.sendMessage(Component.text("Here is your Lava Pickaxe.", NamedTextColor.GREEN));
                 return true;
             }
             case "balance" -> { return cmdBalance(sender, args); }
@@ -167,7 +167,7 @@ public class ShardPickaxePlugin extends org.bukkit.plugin.java.JavaPlugin implem
             final Player tg = target;
             tg.getInventory().addItem(createPickaxe()).values()
                     .forEach(left -> tg.getWorld().dropItemNaturally(tg.getLocation(), left));
-            sender.sendMessage(Component.text("Gave Shard Pickaxe to " + target.getName() + ".", NamedTextColor.GREEN));
+            sender.sendMessage(Component.text("Gave Lava Pickaxe to " + target.getName() + ".", NamedTextColor.GREEN));
             return true;
         }
         if (args.length >= 4 && args[0].equalsIgnoreCase("eco")) {
