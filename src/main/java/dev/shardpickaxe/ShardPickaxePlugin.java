@@ -154,8 +154,9 @@ public class ShardPickaxePlugin extends org.bukkit.plugin.java.JavaPlugin implem
                 sender.sendMessage(Component.text("Player not found.", NamedTextColor.RED));
                 return true;
             }
-            target.getInventory().addItem(createPickaxe()).values()
-                    .forEach(left -> target.getWorld().dropItemNaturally(target.getLocation(), left));
+            final Player tg = target;
+            tg.getInventory().addItem(createPickaxe()).values()
+                    .forEach(left -> tg.getWorld().dropItemNaturally(tg.getLocation(), left));
             sender.sendMessage(Component.text("Gave Shard Pickaxe to " + target.getName() + ".", NamedTextColor.GREEN));
             return true;
         }
