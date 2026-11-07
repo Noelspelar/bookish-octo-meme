@@ -8,6 +8,10 @@ commands:
     description: Give the Shard Pickaxe or reload the config.
     usage: /shardpickaxe <give [player] | reload>
     aliases: [shardpick]
+  lavapickaxe:
+    description: Get the Shard Pickaxe (creative or admin).
+    usage: /lavapickaxe
+    aliases: [shardgive]
   home:
     description: Open the Hearths menu or warp to a home.
     usage: /home [name]

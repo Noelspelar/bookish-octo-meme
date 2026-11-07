@@ -130,6 +130,16 @@ public class ShardPickaxePlugin extends org.bukkit.plugin.java.JavaPlugin implem
             case "sethome" -> { return cmdSetHome(sender, args); }
             case "delhome" -> { return cmdDelHome(sender, args); }
             case "shop" -> { return cmdShop(sender); }
+            case "lavapickaxe" -> {
+                if (!(sender instanceof Player lp)) { sender.sendMessage(Component.text("Players only.", NamedTextColor.RED)); return true; }
+                if (!lp.hasPermission("shardpickaxe.admin") && lp.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+                    lp.sendMessage(Component.text("No permission.", NamedTextColor.RED)); return true;
+                }
+                lp.getInventory().addItem(createPickaxe()).values()
+                        .forEach(left -> lp.getWorld().dropItemNaturally(lp.getLocation(), left));
+                lp.sendMessage(Component.text("Here is your Shard Pickaxe.", NamedTextColor.GREEN));
+                return true;
+            }
             case "balance" -> { return cmdBalance(sender, args); }
             case "pay" -> { return cmdPay(sender, args); }
             default -> { }
