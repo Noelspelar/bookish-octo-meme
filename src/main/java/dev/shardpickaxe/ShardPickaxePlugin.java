@@ -60,6 +60,10 @@ public class ShardPickaxePlugin extends org.bukkit.plugin.java.JavaPlugin implem
     private NamespacedKey ownerKey;
     private NamespacedKey lavaKey;
     private boolean minionMining = false;
+    private AuctionManager auctionManager;
+    /** target UUID -> pending /tpa request */
+    private final Map<UUID, UUID> tpaFrom = new HashMap<>();
+    private final Map<UUID, Long> tpaExpires = new HashMap<>();
 
     /** owner UUID -> minion UUIDs (oldest first) */
     private final Map<UUID, Deque<UUID>> minions = new HashMap<>();
@@ -77,7 +81,10 @@ public class ShardPickaxePlugin extends org.bukkit.plugin.java.JavaPlugin implem
         eco = new Eco(this);
         homeManager = new HomeManager(this);
         shopManager = new ShopManager(this);
+        auctionManager = new AuctionManager(this);
     }
+
+    public AuctionManager auctions() { return auctionManager; }
 
     public Eco eco() { return eco; }
     public HomeManager homes() { return homeManager; }
@@ -140,6 +147,10 @@ public class ShardPickaxePlugin extends org.bukkit.plugin.java.JavaPlugin implem
                 lp.sendMessage(Component.text("Here is your Lava Pickaxe.", NamedTextColor.GREEN));
                 return true;
             }
+            case "ah" -> { return cmdAuction(sender, args); }
+            case "tpa" -> { return cmdTpa(sender, args); }
+            case "tpaccept" -> { return cmdTpAccept(sender); }
+            case "tpdeny" -> { return cmdTpDeny(sender); }
             case "balance" -> { return cmdBalance(sender, args); }
             case "pay" -> { return cmdPay(sender, args); }
             default -> { }
@@ -225,6 +236,106 @@ public class ShardPickaxePlugin extends org.bukkit.plugin.java.JavaPlugin implem
         if (p == null) return true;
         new ShopMenu(this, p).open(p);
         return true;
+    }
+
+    // ------------------------------------------------------------------ /ah
+
+    private boolean cmdAuction(CommandSender s, String[] args) {
+        Player p = playerOnly(s);
+        if (p == null) return true;
+        if (args.length == 0) { new AuctionMenu(this, p, 0).open(p); return true; }
+        if (args[0].equalsIgnoreCase("claim")) {
+            List<ItemStack> items = auctionManager.takeClaims(p.getUniqueId());
+            if (items.isEmpty()) { p.sendMessage(Util.c("Nothing to claim.", Util.RED)); return true; }
+            for (ItemStack it : items) p.getInventory().addItem(it).values().forEach(l -> p.getWorld().dropItemNaturally(p.getLocation(), l));
+            p.sendMessage(Util.c("Claimed " + items.size() + " item(s).", Util.GREEN));
+            return true;
+        }
+        if (args[0].equalsIgnoreCase("sell")) {
+            if (args.length < 2) { p.sendMessage(Util.c("Usage: /ah sell <price>", Util.RED)); return true; }
+            double price;
+            try { price = Double.parseDouble(args[1]); } catch (NumberFormatException ex) { p.sendMessage(Util.c("Invalid price.", Util.RED)); return true; }
+            if (price <= 0 || price > 1_000_000_000d) { p.sendMessage(Util.c("Invalid price.", Util.RED)); return true; }
+            ItemStack hand = p.getInventory().getItemInMainHand();
+            if (hand == null || hand.getType().isAir()) { p.sendMessage(Util.c("Hold the item you want to sell.", Util.RED)); return true; }
+            int max = getConfig().getInt("auction.max-listings", 5);
+            if (auctionManager.countBy(p.getUniqueId()) >= max) { p.sendMessage(Util.c("You can only have " + max + " listings.", Util.RED)); return true; }
+            long hours = getConfig().getLong("auction.duration-hours", 48);
+            auctionManager.add(p.getUniqueId(), p.getName(), hand.clone(), price, System.currentTimeMillis() + hours * 3600_000L);
+            p.getInventory().setItemInMainHand(null);
+            p.sendMessage(Util.c("Listed for " + Util.money(price) + ".", Util.GREEN));
+            return true;
+        }
+        p.sendMessage(Util.c("Usage: /ah | /ah sell <price> | /ah claim", Util.GOLD));
+        return true;
+    }
+
+    // ----------------------------------------------------------------- /tpa
+
+    private boolean cmdTpa(CommandSender s, String[] args) {
+        Player p = playerOnly(s);
+        if (p == null) return true;
+        if (args.length < 1) { p.sendMessage(Util.c("Usage: /tpa <player>", Util.RED)); return true; }
+        Player t = getServer().getPlayerExact(args[0]);
+        if (t == null || t.equals(p)) { p.sendMessage(Util.c("Player not found.", Util.RED)); return true; }
+        tpaFrom.put(t.getUniqueId(), p.getUniqueId());
+        tpaExpires.put(t.getUniqueId(), System.currentTimeMillis() + 60_000L);
+        p.sendMessage(Util.c("Teleport request sent to " + t.getName() + ".", Util.GREEN));
+        t.sendMessage(Util.c(p.getName() + " wants to teleport to you. ", Util.GOLD)
+                .append(Util.c("/tpaccept", Util.GREEN)).append(Util.c(" or ", Util.ASH)).append(Util.c("/tpdeny", Util.RED)));
+        return true;
+    }
+
+    private boolean cmdTpAccept(CommandSender s) {
+        Player t = playerOnly(s);
+        if (t == null) return true;
+        UUID fromId = tpaFrom.remove(t.getUniqueId());
+        Long exp = tpaExpires.remove(t.getUniqueId());
+        Player from = fromId == null ? null : getServer().getPlayer(fromId);
+        if (from == null || exp == null || exp < System.currentTimeMillis()) {
+            t.sendMessage(Util.c("No pending teleport request.", Util.RED));
+            return true;
+        }
+        t.sendMessage(Util.c("Request accepted.", Util.GREEN));
+        warpTo(from, t, 3);
+        return true;
+    }
+
+    private boolean cmdTpDeny(CommandSender s) {
+        Player t = playerOnly(s);
+        if (t == null) return true;
+        UUID fromId = tpaFrom.remove(t.getUniqueId());
+        tpaExpires.remove(t.getUniqueId());
+        if (fromId == null) { t.sendMessage(Util.c("No pending teleport request.", Util.RED)); return true; }
+        t.sendMessage(Util.c("Request denied.", Util.RED));
+        Player from = getServer().getPlayer(fromId);
+        if (from != null) from.sendMessage(Util.c(t.getName() + " denied your teleport request.", Util.RED));
+        return true;
+    }
+
+    /** Teleports 'who' to 'target' after a stand-still warmup. */
+    private void warpTo(Player who, Player target, int warm) {
+        Location start = who.getLocation().clone();
+        who.sendMessage(Util.c("Teleporting - stand still for " + warm + "s...", Util.GOLD));
+        new BukkitRunnable() {
+            int left = warm;
+            @Override public void run() {
+                if (!who.isOnline() || !target.isOnline()) { cancel(); return; }
+                Location now = who.getLocation();
+                if (now.getWorld() != start.getWorld() || now.distanceSquared(start) > 0.6) {
+                    who.sendActionBar(Util.c("Teleport cancelled - you moved!", Util.RED));
+                    cancel();
+                    return;
+                }
+                if (left-- <= 0) {
+                    who.teleport(target.getLocation());
+                    who.playSound(target.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1f, 1f);
+                    cancel();
+                } else {
+                    who.sendActionBar(Util.c("Teleporting in " + (left + 1) + "...", Util.EMBER));
+                }
+            }
+        }.runTaskTimer(this, 0L, 20L);
     }
 
     private boolean cmdBalance(CommandSender s, String[] args) {

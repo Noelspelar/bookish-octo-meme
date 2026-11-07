@@ -25,6 +25,21 @@ commands:
   shop:
     description: Open The Forge shop.
     usage: /shop
+  ah:
+    description: Open the auction house. /ah sell <price>, /ah claim
+    usage: /ah [sell <price> | claim]
+    aliases: [auction, auctionhouse]
+  tpa:
+    description: Ask to teleport to a player.
+    usage: /tpa <player>
+  tpaccept:
+    description: Accept a teleport request.
+    usage: /tpaccept
+    aliases: [tpyes]
+  tpdeny:
+    description: Deny a teleport request.
+    usage: /tpdeny
+    aliases: [tpno]
   balance:
     description: Show your balance.
     usage: /balance

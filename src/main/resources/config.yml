@@ -33,3 +33,8 @@ homes:
   default-max: 3
   # Seconds you must stand still before teleporting
   warmup-seconds: 3
+
+auction:
+  # Max items a player can have listed at once, and how long a listing lasts
+  max-listings: 5
+  duration-hours: 48
