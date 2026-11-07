@@ -1,0 +1,34 @@
+name: ShardPickaxe
+version: 1.0.0
+main: dev.shardpickaxe.ShardPickaxePlugin
+api-version: '1.21'
+description: Shard Pickaxe with a chance to summon a protective lava minion.
+commands:
+  shardpickaxe:
+    description: Give the Shard Pickaxe or reload the config.
+    usage: /shardpickaxe <give [player] | reload>
+    aliases: [shardpick]
+  home:
+    description: Open the Hearths menu or warp to a home.
+    usage: /home [name]
+    aliases: [homes]
+  sethome:
+    description: Save a home at your location.
+    usage: /sethome [name]
+  delhome:
+    description: Delete a home.
+    usage: /delhome <name>
+  shop:
+    description: Open The Forge shop.
+    usage: /shop
+  balance:
+    description: Show your balance.
+    usage: /balance
+    aliases: [bal]
+  pay:
+    description: Send money to a player.
+    usage: /pay <player> <amount>
+permissions:
+  shardpickaxe.admin:
+    description: Allows /shardpickaxe give and reload
+    default: op

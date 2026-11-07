@@ -1,0 +1,49 @@
+# "The Forge" shop. Edit freely. Key = Bukkit material name (or SHARD_PICKAXE).
+# buy: price to purchase 1   sell: payout for selling 1   (0 = not available)
+categories:
+  terra:
+    name: "Terra"
+    icon: GRASS_BLOCK
+    blurb: "Raw building blocks."
+    items:
+      COBBLESTONE: {buy: 8, sell: 1}
+      STONE: {buy: 10, sell: 2}
+      OAK_LOG: {buy: 12, sell: 3}
+      SAND: {buy: 8, sell: 1}
+      GLASS: {buy: 15, sell: 3}
+      DIRT: {buy: 4, sell: 0.5}
+  ores:
+    name: "Deep Veins"
+    icon: DIAMOND
+    blurb: "Ores and ingots."
+    items:
+      COAL: {buy: 40, sell: 10}
+      IRON_INGOT: {buy: 150, sell: 40}
+      GOLD_INGOT: {buy: 300, sell: 80}
+      DIAMOND: {buy: 1200, sell: 350}
+      EMERALD: {buy: 900, sell: 250}
+      NETHERITE_INGOT: {buy: 40000, sell: 12000}
+  hearth:
+    name: "Hearth & Table"
+    icon: COOKED_BEEF
+    blurb: "Food and farm goods."
+    items:
+      COOKED_BEEF: {buy: 60, sell: 12}
+      BREAD: {buy: 30, sell: 6}
+      WHEAT: {buy: 20, sell: 4}
+      GOLDEN_CARROT: {buy: 100, sell: 25}
+  nether:
+    name: "Nether Relics"
+    icon: BLAZE_ROD
+    blurb: "Fire-touched goods."
+    items:
+      BLAZE_ROD: {buy: 250, sell: 60}
+      MAGMA_BLOCK: {buy: 80, sell: 15}
+      NETHERRACK: {buy: 4, sell: 0.5}
+      OBSIDIAN: {buy: 200, sell: 45}
+  special:
+    name: "Ember Specials"
+    icon: LAVA_BUCKET
+    blurb: "Rare gear you can't craft."
+    items:
+      SHARD_PICKAXE: {buy: 250000}

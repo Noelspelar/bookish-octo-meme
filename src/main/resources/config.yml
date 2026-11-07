@@ -1,0 +1,35 @@
+# Chance (percent) per block broken to summon a lava minion. 2.0 = 2%
+chance-percent: 2.0
+
+minion:
+  # How long a minion lives, in seconds
+  lifetime-seconds: 30
+  # Max minions alive per player (oldest is removed when exceeded)
+  max-per-player: 3
+  # How far from the owner a minion looks for enemies (blocks)
+  defend-radius: 12
+  # Minion size (1-3). Scales the molten golem.
+  size: 2
+  health: 40.0
+  name: "Lava Minion"
+  # Lava throw: cooldown between throws and how long victims burn (ticks, 20 = 1s)
+  # Minions help mine: when idle they break blocks near you
+  mining: true
+  mine-interval-ticks: 20
+  mine-radius: 4
+  throw-cooldown-ticks: 40
+  burn-ticks: 80
+
+item:
+  efficiency: 5
+  unbreaking: 3
+  mending: true
+
+economy:
+  start-balance: 1000
+
+homes:
+  # Homes every player gets (max 14). Grant more with permission shardpickaxe.homes.<n>
+  default-max: 3
+  # Seconds you must stand still before teleporting
+  warmup-seconds: 3
