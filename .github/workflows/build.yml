@@ -1,7 +1,10 @@
 name: Build jar
 on: [push, workflow_dispatch]
+permissions:
+  contents: write
 jobs:
   build:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10,3 +13,11 @@ jobs:
       - run: mvn -B package
       - uses: actions/upload-artifact@v4
         with: { name: ShardPickaxe-jar, path: target/ShardPickaxe.jar }
+      - name: Commit jar to branch
+        run: |
+          mkdir -p dist && cp target/ShardPickaxe.jar dist/ShardPickaxe.jar
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f dist/ShardPickaxe.jar
+          git commit -m "Add built ShardPickaxe.jar" || exit 0
+          git push
