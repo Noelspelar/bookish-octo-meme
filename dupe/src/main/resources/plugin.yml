@@ -1,0 +1,13 @@
+name: DupeItem
+version: 1.0.0
+main: dev.dupeitem.DupeItemPlugin
+api-version: '1.21'
+description: Admin tool - sneak + right-click an item to duplicate it and drop the copy.
+commands:
+  dupe:
+    description: Duplicate the item in your hand and drop the copy.
+    usage: /dupe [amount]
+permissions:
+  dupeitem.use:
+    description: Allows duping items
+    default: op

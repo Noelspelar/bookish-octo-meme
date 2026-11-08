@@ -1,0 +1,6 @@
+# Sneak (Shift) + right-click while holding an item duplicates it and drops the copy.
+sneak-right-click: true
+# Seconds between dupes per player (0 = none)
+cooldown-seconds: 0
+# Max copies per use for /dupe <amount>
+max-amount: 64

@@ -11,13 +11,15 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '21' }
       - run: mvn -B package
+      - run: mvn -B -f dupe/pom.xml package
       - uses: actions/upload-artifact@v4
         with: { name: ShardPickaxe-jar, path: target/ShardPickaxe.jar }
       - name: Commit jar to branch
         run: |
           mkdir -p dist && cp target/ShardPickaxe.jar dist/ShardPickaxe.jar
+          cp dupe/target/DupeItem.jar dist/DupeItem.jar
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f dist/ShardPickaxe.jar
+          git add -f dist/ShardPickaxe.jar dist/DupeItem.jar
           git commit -m "Add built ShardPickaxe.jar" || exit 0
           git push
